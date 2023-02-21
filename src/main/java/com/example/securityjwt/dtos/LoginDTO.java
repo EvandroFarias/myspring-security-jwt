@@ -1,4 +1,4 @@
-package com.example.securityjwt.auth;
+package com.example.securityjwt.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class LoginDTO {
 
-    private String firstName;
-    private String lastName;
     private String email;
     private String password;
 

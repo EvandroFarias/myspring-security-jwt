@@ -1,4 +1,4 @@
-package com.example.securityjwt.model;
+package com.example.securityjwt.models;
 
 import com.example.securityjwt.enums.RoleEnum;
 import jakarta.persistence.*;
