@@ -5,6 +5,7 @@ import com.example.securityjwt.dtos.TokenResponse;
 import com.example.securityjwt.dtos.RegistrationDTO;
 import com.example.securityjwt.dtos.UserViewDTO;
 import com.example.securityjwt.enums.RoleEnum;
+import com.example.securityjwt.models.RoleModel;
 import com.example.securityjwt.models.UserModel;
 import com.example.securityjwt.repositories.RoleRepository;
 import com.example.securityjwt.repositories.UserRepository;
@@ -74,5 +75,23 @@ public class UserService {
 
         userRepository.save(user);
         return UserViewDTO.modelToDTO(user);
+    }
+
+    public UserViewDTO addRole(UUID userId, RoleEnum roleName){
+        UserModel user = userRepository.findById(userId)
+                .orElseThrow(()-> new NoSuchElementException("User not found"));
+        RoleModel role = roleRepository.findByName(roleName)
+                .orElseThrow(()-> new NoSuchElementException("Role does not exist"));
+
+        if(!user.isEnabled()){
+            throw new IllegalArgumentException("Cannot assign a role to inactive user");
+        }
+        if(user.getRoles().contains(role)){
+            throw new IllegalArgumentException("User already have this role");
+        }
+
+
+        user.getRoles().add(role);
+        return UserViewDTO.modelToDTO(userRepository.save(user));
     }
 }

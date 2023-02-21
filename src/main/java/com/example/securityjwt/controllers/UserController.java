@@ -3,14 +3,18 @@ package com.example.securityjwt.controllers;
 import com.example.securityjwt.dtos.LoginDTO;
 import com.example.securityjwt.dtos.TokenResponse;
 import com.example.securityjwt.dtos.RegistrationDTO;
+import com.example.securityjwt.enums.RoleEnum;
 import com.example.securityjwt.models.RoleModel;
 import com.example.securityjwt.services.UserService;
 import com.example.securityjwt.services.RoleService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -54,7 +58,22 @@ public class UserController {
         }
     }
 
-    @PostMapping("create-role")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/add-role")
+    public ResponseEntity<Object> addRole(@RequestParam(value = "user") UUID userId, @RequestParam(value = "role") RoleEnum roleName){
+        try {
+            return ResponseEntity.ok().body(userService.addRole(userId, roleName));
+        } catch (NoSuchElementException ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (IllegalArgumentException ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex){
+            return ResponseEntity.status(500).body(ex.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/create-role")
     public ResponseEntity<Object> createRole(@RequestBody RoleModel role){
         try {
             return ResponseEntity.ok(roleService.createRole(role));
